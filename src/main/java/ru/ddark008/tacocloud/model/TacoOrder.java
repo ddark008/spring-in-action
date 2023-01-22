@@ -1,6 +1,8 @@
 package ru.ddark008.tacocloud.model;
 
+import jakarta.validation.constraints.*;
 import lombok.Data;
+import org.hibernate.validator.constraints.CreditCardNumber;
 import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
@@ -8,16 +10,28 @@ import java.util.List;
 
 @Data
 public class TacoOrder {
-    private String deliveryName;
-    private String deliveryStreet;
-    private String deliveryCity;
-    private String deliveryState;
-    private String deliveryZip;
-    private String ccNumber;
-    private String ccExpiration;
-    private String ccCVV;
     private final List<Taco> tacos = new ArrayList<>();
-    public void addTaco(@NonNull Taco taco){
+    @NotBlank(message = "Delivery name is required")
+    private String deliveryName;
+    @NotBlank(message = "Street is required")
+    private String deliveryStreet;
+    @NotBlank(message = "City is required")
+    private String deliveryCity;
+    @NotBlank(message = "State is required")
+    private String deliveryState;
+    @NotBlank(message = "Zip code is required")
+    private String deliveryZip;
+    @CreditCardNumber(message = "Not a valid credit card number")
+    private String ccNumber;
+    @NotNull
+    @Pattern(regexp = "^(0[1-9]|1[0-2])(/)([2-9][0-9])$", message = "Must be formatted MM/YY")
+    private String ccExpiration;
+
+    @NotNull
+    @Digits(integer = 3, fraction = 0, message = "Invalid CVV")
+    private String ccCVV;
+
+    public void addTaco(@NonNull Taco taco) {
         tacos.add(taco);
     }
 }
