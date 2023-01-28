@@ -4,12 +4,16 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@Table
 public class Taco {
+    @Id
     private Long id;
     private LocalDateTime createdAt = LocalDateTime.now();
     @NotBlank
@@ -17,5 +21,5 @@ public class Taco {
     private String name;
     @NotNull
     @Size(min = 1, message = "You must choose at least 1 ingredient")
-    private List<Ingredient> ingredients;
+    private List<IngredientRef> ingredients;
 }

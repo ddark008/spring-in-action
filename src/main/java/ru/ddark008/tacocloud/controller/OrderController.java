@@ -13,6 +13,8 @@ import org.springframework.web.bind.support.SessionStatus;
 import ru.ddark008.tacocloud.model.TacoOrder;
 import ru.ddark008.tacocloud.repository.OrderRepository;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @Controller
 @RequestMapping("/orders")
@@ -31,6 +33,7 @@ public class OrderController {
         if (errors.hasErrors()){
             return "orderForm";
         }
+        order.setPlacedAt(LocalDateTime.now());
         orderRepo.save(order);
         log.info("Order submitted: {}", order);
         sessionStatus.setComplete();
