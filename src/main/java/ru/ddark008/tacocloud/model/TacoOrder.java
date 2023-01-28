@@ -5,11 +5,15 @@ import lombok.Data;
 import org.hibernate.validator.constraints.CreditCardNumber;
 import org.springframework.lang.NonNull;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 public class TacoOrder {
+    private static final long serialVersionUID = 1L;
+    private Long id;
+    private LocalDateTime placedAt;
     private final List<Taco> tacos = new ArrayList<>();
     @NotBlank(message = "Delivery name is required")
     private String deliveryName;
@@ -18,6 +22,7 @@ public class TacoOrder {
     @NotBlank(message = "City is required")
     private String deliveryCity;
     @NotBlank(message = "State is required")
+    @Size(max = 2)
     private String deliveryState;
     @NotBlank(message = "Zip code is required")
     private String deliveryZip;

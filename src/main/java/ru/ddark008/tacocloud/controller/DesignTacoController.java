@@ -1,6 +1,7 @@
 package ru.ddark008.tacocloud.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,32 +11,25 @@ import ru.ddark008.tacocloud.model.Ingredient;
 import ru.ddark008.tacocloud.model.Ingredient.Type;
 import ru.ddark008.tacocloud.model.Taco;
 import ru.ddark008.tacocloud.model.TacoOrder;
+import ru.ddark008.tacocloud.repository.IngredientRepository;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @Controller
 @RequestMapping("/design")
 @SessionAttributes("tacoOrder")
+@RequiredArgsConstructor
 public class DesignTacoController {
+    private final IngredientRepository ingredientRepo;
+
     @ModelAttribute
     public void addIngredientsToModel(Model model) {
-        List<Ingredient> ingredients = List.of(
-                new Ingredient("FLTO", "Flour Tortilla", Type.WRAP),
-                new Ingredient("COTO", "Corn Tortilla", Type.WRAP),
-                new Ingredient("GRBF", "Ground Beef", Type.PROTEIN),
-                new Ingredient("CARN", "Carnitas", Type.PROTEIN),
-                new Ingredient("TMTO", "Diced Tomators", Type.VEGGIES),
-                new Ingredient("LETC", "Lettuce", Type.VEGGIES),
-                new Ingredient("CHED", "Cheddar", Type.CHEESE),
-                new Ingredient("JACK", "Monterrey Jack", Type.CHEESE),
-                new Ingredient("SLSA", "Salsa", Type.SAUCE),
-                new Ingredient("SRCR", "Sour Cream", Type.SAUCE)
-        );
-
-        Arrays.stream(Type.values()).forEach(type -> model.addAttribute(type.toString().toLowerCase(), filterByType(ingredients, type)));
+        Iterable<Ingredient> ingredients = ingredientRepo.findAll();
+        Arrays.stream(Type.values()).forEach(type ->
+                model.addAttribute(type.toString().toLowerCase(), filterByType(ingredients, type)));
     }
 
     @ModelAttribute(name = "tacoOrder")
@@ -54,8 +48,8 @@ public class DesignTacoController {
     }
 
     @PostMapping
-    public String processTaco(@Valid Taco taco, Errors errors, @ModelAttribute TacoOrder tacoOrder){
-        if (errors.hasErrors()){
+    public String processTaco(@Valid Taco taco, Errors errors, @ModelAttribute TacoOrder tacoOrder) {
+        if (errors.hasErrors()) {
             return "design";
         }
 
@@ -64,8 +58,9 @@ public class DesignTacoController {
         return "redirect:/orders/current";
     }
 
-    private Iterable<Ingredient> filterByType(List<Ingredient> ingredients, Type type) {
-        return ingredients.stream().filter(i -> i.type().equals(type)).collect(Collectors.toList());
+    private Iterable<Ingredient> filterByType(Iterable<Ingredient> ingredients, Type type) {
+        return StreamSupport.stream(ingredients.spliterator(), true)
+                .filter(i -> i.getType().equals(type)).collect(Collectors.toList());
     }
 
 }
