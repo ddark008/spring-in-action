@@ -1,19 +1,21 @@
 package ru.ddark008.tacocloud.model;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
+import org.springframework.lang.NonNull;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Table
+@Entity
 public class Taco {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private LocalDateTime createdAt = LocalDateTime.now();
     @NotBlank
@@ -21,5 +23,10 @@ public class Taco {
     private String name;
     @NotNull
     @Size(min = 1, message = "You must choose at least 1 ingredient")
-    private List<IngredientRef> ingredients;
+    @ManyToMany
+    private List<Ingredient> ingredients = new ArrayList<>();
+
+    public void addIngredient(@NonNull Ingredient ingredient){
+        this.ingredients.add(ingredient);
+    }
 }

@@ -1,10 +1,9 @@
 package ru.ddark008.tacocloud.model;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.hibernate.validator.constraints.CreditCardNumber;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.lang.NonNull;
 
 import java.time.LocalDateTime;
@@ -12,12 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Table
+@Entity
 public class TacoOrder {
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private LocalDateTime placedAt;
+    private LocalDateTime placedAt = LocalDateTime.now();
+    @OneToMany(cascade = CascadeType.ALL)
     private final List<Taco> tacos = new ArrayList<>();
     @NotBlank(message = "Delivery name is required")
     private String deliveryName;
